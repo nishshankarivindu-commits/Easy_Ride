@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>EasyRide | Admin Control Center</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#008000", "background-dark": "#050a05", "accent-dark": "#0a0f0a" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #050a05 !important; color: white; padding-top: 5rem; }
+        .glass-nav { background: rgba(5, 10, 5, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .glass-card { background: rgba(10, 15, 10, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #008000; border-radius: 10px; }
+    </style>
+</head>
+<body class="antialiased font-display min-h-screen">
+
+    <nav class="fixed top-0 w-full z-[100] glass-nav">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+                <span class="material-symbols-outlined text-primary text-3xl font-bold">directions_car</span>
+                <h1 class="text-white text-xl font-black italic uppercase tracking-tighter text-left">EasyRide</h1>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                <a href="index.html" class="hover:text-primary transition-all">Home</a>
+                <a href="fleet.html" class="hover:text-primary transition-all">Fleet</a>
+                <a href="admin.html" class="text-primary transition-all">Admin Panel</a>
+            </div>
+
+            <div id="nav-actions" class="flex items-center gap-4">
+                <button onclick="handleLogout()" class="text-red-500 hover:text-red-400 transition-all">
+                    <span class="material-symbols-outlined text-2xl">logout</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex min-h-[calc(100vh-5rem)]">
+        
+        <aside class="w-64 border-r border-white/5 bg-black hidden lg:flex flex-col sticky top-20 h-[calc(100vh-5rem)]">
+            <nav class="flex-1 px-4 py-8 space-y-2 text-left">
+                <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-4 ml-3">Menu</p>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white font-bold text-xs uppercase" href="admin.html">
+                    <span class="material-symbols-outlined text-sm">dashboard</span> <span>Dashboard</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-white/5 hover:text-white transition-all text-xs font-bold uppercase" href="add-vehicle.html">
+                    <span class="material-symbols-outlined text-sm">add_circle</span> <span>Add Vehicle</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-white/5 hover:text-white transition-all text-xs font-bold uppercase" href="fleet.html">
+                    <span class="material-symbols-outlined text-sm">directions_car</span> <span>Manage Fleet</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-white/5">
+                <div class="flex items-center gap-3 p-3 bg-primary/5 rounded-2xl border border-primary/10 text-left">
+                    <div class="size-10 rounded-full bg-primary/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">admin_panel_settings</span>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p id="admin-name" class="text-xs font-black truncate uppercase tracking-tighter text-white">Admin</p>
+                        <p class="text-[9px] text-primary font-bold uppercase">System Controller</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-8 overflow-y-auto text-left">
+            <div class="max-w-6xl mx-auto space-y-10">
+                
+                <header class="flex justify-between items-end">
+                    <div>
+                        <h2 class="text-4xl font-black text-white uppercase italic tracking-tighter">Platform <span class="text-primary">Control</span></h2>
+                        <p class="text-slate-500 mt-2 text-xs font-bold uppercase tracking-widest">Real-time oversight of all activities</p>
+                    </div>
+                    <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Live Engine Active</span>
+                    </div>
+                </header>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-8 rounded-[2rem]">
+                        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-2">Total Reservations</p>
+                        <p id="stat-total" class="text-4xl font-black text-white italic">0</p>
+                    </div>
+                    <div class="glass-card p-8 rounded-[2rem]">
+                        <p class="text-amber-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-2">Pending Actions</p>
+                        <p id="stat-pending" class="text-4xl font-black text-white italic">0</p>
+                    </div>
+                    <div class="glass-card p-8 rounded-[2rem]">
+                        <p class="text-primary text-[10px] font-bold uppercase tracking-[0.2em] mb-2">Total Revenue</p>
+                        <p id="stat-revenue" class="text-4xl font-black text-white italic">LKR 0</p>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-[2.5rem] overflow-hidden shadow-2xl">
+                    <div class="p-8 border-b border-white/5 flex items-center justify-between">
+                        <h3 class="font-black text-sm text-white uppercase italic tracking-tighter">Recent Reservations</h3>
+                        <button onclick="loadBookings()" class="text-primary text-[10px] font-black uppercase tracking-widest hover:underline flex items-center gap-1 transition-all">
+                            <span class="material-symbols-outlined text-sm">refresh</span> Sync Data
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-white/[0.02] text-slate-500 text-[10px] font-black uppercase tracking-widest border-b border-white/5">
+                                <tr>
+                                    <th class="px-8 py-5">Vehicle</th>
+                                    <th class="px-8 py-5">Customer</th>
+                                    <th class="px-8 py-5">Dates</th>
+                                    <th class="px-8 py-5">Amount</th>
+                                    <th class="px-8 py-5">Status</th>
+                                    <th class="px-8 py-5 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="booking-table-body" class="divide-y divide-white/5 text-xs">
+                                <tr><td colspan="6" class="p-20 text-center text-slate-600 font-bold uppercase animate-pulse">Establishing Secure Connection...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="mt-20 py-10 border-t border-white/5 text-center">
+                <p class="text-slate-600 text-[9px] font-black uppercase tracking-[0.4em]">© 2026 EasyRide Platform Control • Sri Lanka</p>
+            </footer>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const _supabase = supabase.createClient('https://mgzvrwlztdzkaasngqxh.supabase.co', 'sb_publishable_53m4C0gq1eGMRkjvbZ2-9w_F4mIKRCB');
+
+        async function initAdmin() {
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+
+            const { data: prof } = await _supabase.from('profiles').select('*').eq('id', session.user.id).single();
+            
+            // Security Check
+            if (!prof || prof.role !== 'admin') {
+                alert("Access Denied: Admin access required.");
+                window.location.href = 'index.html';
+                return;
+            }
+
+            if (prof) document.getElementById('admin-name').innerText = prof.full_name;
+            loadBookings();
+        }
+
+        async function loadBookings() {
+            const body = document.getElementById('booking-table-body');
+            body.innerHTML = '<tr><td colspan="6" class="p-20 text-center italic text-slate-600 font-bold uppercase animate-pulse">Updating...</td></tr>';
+
+            const { data: bookings, error } = await _supabase.from('bookings').select('*').order('created_at', { ascending: false });
+
+            if (error) { body.innerHTML = `<tr><td colspan="6" class="p-10 text-center text-red-500 font-bold">${error.message}</td></tr>`; return; }
+
+            let totalRev = 0;
+            let pendingCount = 0;
+            body.innerHTML = "";
+
+            if (bookings.length === 0) {
+                body.innerHTML = '<tr><td colspan="6" class="p-20 text-center text-slate-700 font-bold uppercase italic">No activity recorded yet.</td></tr>';
+            }
+
+            bookings.forEach(b => {
+                totalRev += Number(b.total_price || 0);
+                if(b.status === 'Pending') pendingCount++;
+
+                const statusClass = b.status === 'Approved' ? 'text-emerald-500 bg-emerald-500/10' : 
+                                  (b.status === 'Rejected' ? 'text-red-500 bg-red-500/10' : 'text-amber-500 bg-amber-500/10');
+
+                body.innerHTML += `
+                    <tr class="hover:bg-white/[0.02] transition-colors border-b border-white/5">
+                        <td class="px-8 py-6">
+                            <p class="font-black text-white uppercase italic tracking-tighter">${b.car_name}</p>
+                            <p class="text-[9px] text-slate-600 font-bold uppercase mt-0.5">ID: #ER-${b.id.toString().slice(-5)}</p>
+                        </td>
+                        <td class="px-8 py-6">
+                            <p class="font-bold text-slate-200 uppercase text-[10px]">${b.customer_name}</p>
+                            <p class="text-[9px] text-slate-500">${b.customer_phone}</p>
+                        </td>
+                        <td class="px-8 py-6">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest"><span class="text-primary">IN:</span> ${b.pickup_date}</span>
+                                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest"><span class="text-red-500">OUT:</span> ${b.return_date}</span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6 font-black text-white text-sm italic">LKR ${Number(b.total_price).toLocaleString()}</td>
+                        <td class="px-8 py-6">
+                            <span class="px-3 py-1.5 rounded-lg font-black uppercase text-[9px] tracking-widest ${statusClass}">${b.status}</span>
+                        </td>
+                        <td class="px-8 py-6 text-right">
+                            <div class="flex justify-end gap-2">
+                                ${b.status === 'Pending' ? `
+                                    <button onclick="updateStatus('${b.id}', 'Approved')" class="p-2 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white rounded-xl transition-all">
+                                        <span class="material-symbols-outlined text-sm">check</span>
+                                    </button>
+                                    <button onclick="updateStatus('${b.id}', 'Rejected')" class="p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all">
+                                        <span class="material-symbols-outlined text-sm">close</span>
+                                    </button>
+                                ` : `<span class="material-symbols-outlined text-slate-800">verified</span>`}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('stat-total').innerText = bookings.length;
+            document.getElementById('stat-revenue').innerText = "LKR " + totalRev.toLocaleString();
+            document.getElementById('stat-pending').innerText = pendingCount;
+        }
+
+        // --- UPDATED: Update Status and Notify Customer ---
+        async function updateStatus(id, newStatus) {
+            if (!confirm(`Confirm mark as ${newStatus}?`)) return;
+
+            try {
+                // 1. බුකින් එක Update කිරීම සහ එම Row එකේ දත්ත ලබාගැනීම
+                const { data: booking, error: bErr } = await _supabase.from('bookings')
+                    .update({ status: newStatus })
+                    .eq('id', id)
+                    .select()
+                    .single();
+
+                if (bErr) throw bErr;
+
+                // 2. Customer ට Notification එකක් සෑදීම
+                const message = newStatus === 'Approved' 
+                    ? `✅ Good News! Your booking for ${booking.car_name} was APPROVED.` 
+                    : `❌ Notice: Your booking for ${booking.car_name} was rejected.`;
+
+                await _supabase.from('notifications').insert([{
+                    user_id: booking.customer_id,
+                    message: message
+                }]);
+
+                loadBookings();
+                alert(`Success: Booking ${newStatus} and Customer notified.`);
+
+            } catch (err) { alert("Error: " + err.message); }
+        }
+
+        async function handleLogout() {
+            if(confirm("Logout from admin session?")) {
+                await _supabase.auth.signOut();
+                window.location.href = 'index.html';
+            }
+        }
+
+        window.onload = initAdmin;
+    </script>
+</body>
+</html>

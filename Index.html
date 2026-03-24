@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>EasyRide | Premier Car Rentals</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#008000", "background-dark": "#050a05", "accent-dark": "#0a0f0a" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                },
+            },
+        }
+    </script>
+    <style>
+        body { background-color: #050a05; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; padding-top: 80px; }
+        
+        /* 1. ANIMATED BACKGROUND ELEMENTS */
+        .orb { position: absolute; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.15; animation: drift 20s infinite alternate ease-in-out; }
+        @keyframes drift { from { transform: translate(0, 0); } to { transform: translate(100px, 50px); } }
+        
+        .hero-bg { background: radial-gradient(circle at 50% 50%, #00800015 0%, #050a05 100%); }
+        .glass-nav { background: rgba(5, 10, 5, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); transition: 0.4s ease; }
+        .glass-card:hover { border-color: #00800066; transform: translateY(-10px); background: rgba(255, 255, 255, 0.04); }
+        
+        html { scroll-behavior: smooth; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #008000; border-radius: 10px; }
+    </style>
+</head>
+<body class="antialiased font-display relative">
+
+    <div class="orb w-[500px] h-[500px] bg-primary top-[-100px] left-[-100px]"></div>
+    <div class="orb w-[400px] h-[400px] bg-emerald-700 bottom-[-50px] right-[-50px]" style="animation-delay: -5s;"></div>
+
+    <nav class="fixed top-0 w-full z-[100] glass-nav">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                <span class="material-icons text-primary text-4xl font-bold">directions_car</span>
+                <h1 class="text-white text-xl font-black italic uppercase tracking-tighter">EasyRide</h1>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                <a href="#home" class="hover:text-primary transition-all">Home</a>
+                <a href="fleet.html" class="hover:text-primary transition-all">Explore Fleet</a>
+                <a href="#how-it-works" class="hover:text-primary transition-all">Support</a>
+            </div>
+
+            <div id="nav-auth-box">
+                <div class="animate-pulse w-32 h-8 bg-white/5 rounded-xl"></div>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="min-h-[85vh] flex items-center justify-center px-6 text-center relative overflow-hidden">
+        <div class="max-w-5xl space-y-12 relative z-10">
+            <div class="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-md">
+                <span class="size-2 rounded-full bg-primary animate-ping"></span>
+                <p class="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Premium Fleet Now Live</p>
+            </div>
+            
+            <h2 class="text-7xl md:text-9xl font-black italic uppercase tracking-tighter leading-[0.8] drop-shadow-2xl">
+                DRIVE THE <br> <span class="text-primary">FUTURE.</span>
+            </h2>
+            
+            <p class="max-w-2xl mx-auto text-slate-400 text-sm md:text-lg font-medium leading-relaxed">
+                Unlock the ultimate road experience in Sri Lanka. From luxury sedans to rugged SUVs, find your perfect match in our curated fleet.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4">
+                <button onclick="window.location.href='fleet.html'" class="group relative w-full sm:w-auto bg-primary hover:bg-emerald-600 px-14 py-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 shadow-2xl shadow-primary/30">
+                    Browse Fleet
+                </button>
+                <button onclick="window.location.href='login.html'" class="w-full sm:w-auto bg-white/5 hover:bg-white/10 px-14 py-5 rounded-2xl font-black text-xs uppercase tracking-widest border border-white/10 transition-all backdrop-blur-sm">
+                    List Your Car
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="py-32 max-w-7xl mx-auto px-6 relative">
+        <div class="text-center mb-24 space-y-4">
+            <h3 class="text-xs font-black text-primary uppercase tracking-[0.5em]">The Experience</h3>
+            <h2 class="text-5xl font-black italic uppercase tracking-tighter">Your Journey, Simplified</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div class="p-12 rounded-[3rem] glass-card space-y-8 group">
+                <div class="size-20 bg-primary/10 rounded-[2rem] flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:scale-110 transition-all duration-500">
+                    <span class="material-icons text-primary text-4xl group-hover:text-white">travel_explore</span>
+                </div>
+                <div class="space-y-4">
+                    <h4 class="text-2xl font-black uppercase italic tracking-tighter">1. Discovery</h4>
+                    <p class="text-slate-500 text-xs font-bold leading-relaxed uppercase tracking-widest">Filter by location, price, and insurance to find your dream ride.</p>
+                </div>
+            </div>
+
+            <div class="p-12 rounded-[3rem] glass-card space-y-8 group">
+                <div class="size-20 bg-primary/10 rounded-[2rem] flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:scale-110 transition-all duration-500">
+                    <span class="material-icons text-primary text-4xl group-hover:text-white">auto_awesome</span>
+                </div>
+                <div class="space-y-4">
+                    <h4 class="text-2xl font-black uppercase italic tracking-tighter">2. Reservation</h4>
+                    <p class="text-slate-500 text-xs font-bold leading-relaxed uppercase tracking-widest">Secure your vehicle instantly with our seamless digital checkout.</p>
+                </div>
+            </div>
+
+            <div class="p-12 rounded-[3rem] glass-card space-y-8 group">
+                <div class="size-20 bg-primary/10 rounded-[2rem] flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:scale-110 transition-all duration-500">
+                    <span class="material-icons text-primary text-4xl group-hover:text-white">speed</span>
+                </div>
+                <div class="space-y-4">
+                    <h4 class="text-2xl font-black uppercase italic tracking-tighter">3. Freedom</h4>
+                    <p class="text-slate-500 text-xs font-bold leading-relaxed uppercase tracking-widest">Pick up the keys and hit the road. Your adventure starts here.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-32 bg-white/[0.01] border-y border-white/5 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+                <div class="space-y-5 text-left">
+                    <h3 class="text-xs font-black text-primary uppercase tracking-[0.5em]">Live Fleet</h3>
+                    <h2 class="text-6xl font-black italic uppercase tracking-tighter leading-none">Featured <br> <span class="text-slate-600">Vehicles</span></h2>
+                </div>
+                <button onclick="window.location.href='fleet.html'" class="text-[11px] font-black uppercase tracking-[0.4em] text-primary hover:text-white transition-all py-4 px-8 border border-primary/30 rounded-2xl hover:bg-primary">View Full Fleet →</button>
+            </div>
+
+            <div id="preview-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <div class="h-[400px] bg-white/5 rounded-[3rem] animate-pulse"></div>
+                <div class="h-[400px] bg-white/5 rounded-[3rem] animate-pulse"></div>
+                <div class="h-[400px] bg-white/5 rounded-[3rem] animate-pulse"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-24 px-6 border-t border-white/5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
+            <div class="space-y-4">
+                <div class="flex items-center justify-center md:justify-start gap-3">
+                    <span class="material-icons text-primary text-3xl font-bold">directions_car</span>
+                    <p class="font-black italic uppercase tracking-tighter text-xl">EasyRide Fleet</p>
+                </div>
+                <p class="text-[10px] font-bold text-slate-600 uppercase tracking-[0.5em]">Defining mobility in Sri Lanka.</p>
+            </div>
+            
+            <div class="flex gap-10 text-slate-500">
+                <span class="material-icons hover:text-primary cursor-pointer transition-all">facebook</span>
+                <span class="material-icons hover:text-primary cursor-pointer transition-all">language</span>
+                <span class="material-icons hover:text-primary cursor-pointer transition-all">email</span>
+            </div>
+
+            <p class="text-[9px] font-bold text-slate-700 uppercase tracking-[0.5em]">&copy; 2026 EasyRide. Built for the Road.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const _supabase = supabase.createClient('https://mgzvrwlztdzkaasngqxh.supabase.co', 'sb_publishable_53m4C0gq1eGMRkjvbZ2-9w_F4mIKRCB');
+
+        async function initPage() {
+            setupNavbar();
+            loadPreview();
+        }
+
+        // --- UPDATED: Smart Navbar with Logout ---
+        async function setupNavbar() {
+            const { data: { session } } = await _supabase.auth.getSession();
+            const navAuth = document.getElementById('nav-auth-box');
+
+            if (session) {
+                const { data: prof } = await _supabase.from('profiles').select('role').eq('id', session.user.id).single();
+                const dashboardLink = prof?.role === 'owner' ? 'owner-dashboard.html' : 'customer-dashboard.html';
+                const dashboardName = prof?.role === 'owner' ? 'Owner Hub' : 'My Bookings';
+
+                navAuth.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <a href="${dashboardLink}" class="bg-primary/20 text-primary hover:bg-primary hover:text-white px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all">
+                            ${dashboardName}
+                        </a>
+                        <button onclick="handleLogout()" class="size-10 flex items-center justify-center bg-white/5 text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition-all">
+                            <span class="material-icons text-xl">logout</span>
+                        </button>
+                    </div>
+                `;
+            } else {
+                navAuth.innerHTML = `
+                    <div class="flex items-center gap-5">
+                        <a href="login.html" class="text-white text-[10px] font-black uppercase tracking-widest hover:text-primary transition-all">Login</a>
+                        <a href="login.html" class="bg-primary hover:bg-emerald-600 px-7 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-primary/20">Sign Up</a>
+                    </div>
+                `;
+            }
+        }
+
+        async function handleLogout() {
+            if(confirm("Are you sure you want to logout?")) {
+                await _supabase.auth.signOut();
+                location.reload();
+            }
+        }
+
+        async function loadPreview() {
+            const { data: cars } = await _supabase.from('cars').select('*').limit(3).order('created_at', {ascending: false});
+            const grid = document.getElementById('preview-grid');
+            
+            if (cars && cars.length > 0) {
+                grid.innerHTML = "";
+                cars.forEach(c => {
+                    grid.innerHTML += `
+                        <div class="glass-card rounded-[3.5rem] overflow-hidden flex flex-col text-left group">
+                            <div class="relative overflow-hidden aspect-[16/10]">
+                                <img src="${c.image_url}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                <div class="absolute top-6 right-6 bg-primary px-4 py-1.5 rounded-xl shadow-xl">
+                                    <p class="text-[10px] font-black text-white uppercase">${c.man_year}</p>
+                                </div>
+                            </div>
+                            <div class="p-10 space-y-6">
+                                <h4 class="text-2xl font-black text-white italic uppercase tracking-tighter">${c.name}</h4>
+                                <div class="flex justify-between items-center pt-6 border-t border-white/5">
+                                    <p class="text-sm font-black text-primary italic uppercase tracking-tighter">LKR ${Number(c.price).toLocaleString()} <span class="text-[9px] text-slate-500">/day</span></p>
+                                    <button onclick="window.location.href='fleet.html'" class="text-[10px] font-black uppercase text-slate-500 hover:text-white transition-all underline decoration-primary underline-offset-8">Details</button>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            }
+        }
+
+        window.onload = initPage;
+    </script>
+</body>
+</html>

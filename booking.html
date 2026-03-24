@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>EasyRide | Confirm Your Booking</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#008000", "background-dark": "#050a05" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #050a05 !important; color: white; padding-top: 5rem; }
+        .glass { background: rgba(10, 15, 10, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        
+        .input-dark { 
+            background: #0a0f0a !important; 
+            border: 1px solid rgba(0, 128, 0, 0.2) !important; 
+            color: white !important; 
+            border-radius: 1rem !important;
+            transition: all 0.3s ease;
+        }
+        .input-dark:focus { border-color: #008000 !important; ring: 0 !important; box-shadow: 0 0 15px rgba(0, 128, 0, 0.2); }
+
+        /* Global Navigation Styles */
+        .glass-nav { 
+            background: rgba(5, 10, 5, 0.85); 
+            backdrop-filter: blur(20px); 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+        }
+    </style>
+</head>
+<body class="min-h-screen py-10 px-6">
+
+    <nav class="fixed top-0 w-full z-[100] glass-nav">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+                <span class="material-icons text-primary text-3xl font-bold">directions_car</span>
+                <h1 class="text-white text-xl font-black italic uppercase tracking-tighter text-left">EasyRide</h1>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                <a href="index.html" class="hover:text-primary transition-all">Home</a>
+                <a href="fleet.html" class="hover:text-primary transition-all">Explore Fleet</a>
+                <a href="index.html#how-it-works" class="hover:text-primary transition-all">Support</a>
+            </div>
+
+            <div id="nav-actions" class="flex items-center gap-4">
+                <a href="login.html" class="bg-white/5 hover:bg-white/10 px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest border border-white/5 transition-all">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto mt-10">
+        <header class="mb-10 flex items-center gap-4">
+            <button onclick="window.location.href='fleet.html'" class="p-3 bg-white/5 rounded-full text-slate-400 hover:text-white transition-all">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <h1 class="text-3xl font-black italic uppercase tracking-tighter text-left">Confirm <span class="text-primary">Reservation</span></h1>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div class="lg:col-span-1 text-left">
+                <div class="glass p-6 rounded-[2.5rem] sticky top-24 border border-primary/10">
+                    <img id="car-img" src="" class="w-full aspect-video object-cover rounded-3xl mb-6 border border-white/5 shadow-2xl">
+                    <h2 id="car-name" class="text-xl font-black text-white uppercase italic tracking-tighter">Loading...</h2>
+                    <p id="car-price-label" class="text-primary font-bold text-xs mt-1 uppercase tracking-widest">LKR 0 / DAY</p>
+                    
+                    <div class="my-8 pt-8 border-t border-white/5 space-y-4">
+                        <div class="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-500">
+                            <span>Duration</span>
+                            <span id="days-count" class="text-white">0 Days</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Total Price</span>
+                            <span id="final-total" class="text-xl font-black text-white italic tracking-tighter">LKR 0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2">
+                <form id="confirm-form" class="glass p-10 rounded-[2.5rem] space-y-10">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Pickup Date</label>
+                            <input type="date" id="pickup-date" required class="input-dark w-full p-4 outline-none" onchange="calculateTotal()">
+                        </div>
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Return Date</label>
+                            <input type="date" id="return-date" required class="input-dark w-full p-4 outline-none" onchange="calculateTotal()">
+                        </div>
+                    </div>
+
+                    <div class="space-y-6 pt-6 border-t border-white/5 text-left">
+                        <h3 class="text-xs font-black text-primary uppercase tracking-[0.2em]">Contact Details</h3>
+                        <div class="relative">
+                            <span class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-slate-600">person</span>
+                            <input id="cust-name" type="text" required placeholder="Your Full Name" class="input-dark w-full pl-12 pr-4 py-4 outline-none">
+                        </div>
+                        <div class="relative">
+                            <span class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-slate-600">phone</span>
+                            <input id="cust-phone" type="text" required placeholder="Phone Number (e.g. 0777123456)" class="input-dark w-full pl-12 pr-4 py-4 outline-none">
+                        </div>
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit" id="book-btn" class="w-full bg-primary hover:bg-emerald-600 py-5 rounded-2xl font-black text-sm text-white uppercase tracking-widest shadow-2xl transition-all active:scale-95 shadow-primary/20">
+                            Place Booking Request
+                        </button>
+                        <p class="text-[9px] text-center text-slate-600 uppercase font-bold mt-4 tracking-widest">By clicking, you agree to the owner's rental terms.</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const _supabase = supabase.createClient('https://mgzvrwlztdzkaasngqxh.supabase.co', 'sb_publishable_53m4C0gq1eGMRkjvbZ2-9w_F4mIKRCB');
+        
+        let carPrice = 0;
+        let carId = null;
+        let carOwnerId = null;
+
+        async function initBooking() {
+            setupNavbar();
+
+            const data = JSON.parse(localStorage.getItem('selectedCar'));
+            if (!data) { window.location.href = 'fleet.html'; return; }
+
+            carId = data.id;
+            carPrice = data.price;
+            carOwnerId = data.owner_id; // වාහනයේ අයිතිකාරයාගේ ID එක ගන්නවා
+            
+            document.getElementById('car-name').innerText = data.name;
+            document.getElementById('car-img').src = data.img;
+            document.getElementById('car-price-label').innerText = "LKR " + carPrice.toLocaleString() + " / DAY";
+        }
+
+        async function setupNavbar() {
+            const { data: { session } } = await _supabase.auth.getSession();
+            const navActions = document.getElementById('nav-actions');
+            if (session) {
+                const { data: prof } = await _supabase.from('profiles').select('role').eq('id', session.user.id).single();
+                const dashboardLink = prof?.role === 'owner' ? 'owner-dashboard.html' : 'customer-dashboard.html';
+                const dashboardName = prof?.role === 'owner' ? 'Owner Hub' : 'My Bookings';
+                navActions.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <a href="${dashboardLink}" class="bg-primary/20 text-primary hover:bg-primary hover:text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all">${dashboardName}</a>
+                        <button onclick="handleLogout()" class="text-red-500 hover:text-red-400 transition-all"><span class="material-icons text-xl">logout</span></button>
+                    </div>`;
+            }
+        }
+
+        async function handleLogout() {
+            if(confirm("Logout වෙන්න ෂුවර්ද?")) {
+                await _supabase.auth.signOut();
+                window.location.href = 'index.html';
+            }
+        }
+
+        function calculateTotal() {
+            const pickup = document.getElementById('pickup-date').value;
+            const returnD = document.getElementById('return-date').value;
+            
+            if (pickup && returnD) {
+                const d1 = new Date(pickup);
+                const d2 = new Date(returnD);
+                if (d2 > d1) {
+                    const diffTime = Math.abs(d2 - d1);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    const total = diffDays * carPrice;
+                    document.getElementById('days-count').innerText = diffDays + " Days";
+                    document.getElementById('final-total').innerText = "LKR " + total.toLocaleString();
+                    return total;
+                }
+            }
+            document.getElementById('days-count').innerText = "0 Days";
+            document.getElementById('final-total').innerText = "LKR 0";
+            return 0;
+        }
+
+        document.getElementById('confirm-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('book-btn');
+            const total = calculateTotal();
+
+            if (total <= 0) { alert("Return date must be after Pickup date!"); return; }
+
+            btn.innerText = "CONFIRMING REQUEST..."; btn.disabled = true;
+
+            try {
+                const { data: { session } } = await _supabase.auth.getSession();
+                if (!session) throw new Error("Please Login to continue.");
+
+                // 1. Database එකට Booking එක දානවා
+                const { error: bookingErr } = await _supabase.from('bookings').insert([{
+                    car_id: carId,
+                    car_name: document.getElementById('car-name').innerText,
+                    customer_id: session.user.id,
+                    customer_name: document.getElementById('cust-name').value,
+                    customer_phone: document.getElementById('cust-phone').value,
+                    pickup_date: document.getElementById('pickup-date').value,
+                    return_date: document.getElementById('return-date').value,
+                    total_price: total,
+                    status: 'Pending'
+                }]);
+
+                if (bookingErr) throw bookingErr;
+
+                // 2. Owner ට Notification එකක් යවනවා (අලුත් කොටස)
+                if (carOwnerId) {
+                    await _supabase.from('notifications').insert([{
+                        user_id: carOwnerId,
+                        message: `🚗 New booking request for ${document.getElementById('car-name').innerText} from ${document.getElementById('cust-name').value}!`
+                    }]);
+                }
+
+                alert("✅ Success! Your booking request has been sent to the owner.");
+                window.location.href = 'customer-dashboard.html';
+
+            } catch (err) { 
+                console.error(err);
+                alert("Error: " + err.message); 
+                btn.innerText = "Place Booking Request"; btn.disabled = false; 
+            }
+        });
+
+        window.onload = initBooking;
+    </script>
+</body>
+</html>

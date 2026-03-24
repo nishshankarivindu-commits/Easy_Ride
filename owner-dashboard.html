@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>EasyRide | Owner Hub</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#008000", "accent": "#00ff00", "background-dark": "#050a05" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #050a05 !important; color: white; padding-top: 5rem; }
+        .glass { background: rgba(10, 15, 10, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .glass-nav { background: rgba(5, 10, 5, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .glass-card { background: rgba(10, 15, 10, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #008000; border-radius: 10px; }
+        
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-slide { animation: slideDown 0.5s ease-out; }
+    </style>
+</head>
+<body class="bg-background-dark text-slate-100 antialiased font-display min-h-screen">
+
+    <nav class="fixed top-0 w-full z-[100] glass-nav">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+                <span class="material-icons text-primary text-3xl font-bold">directions_car</span>
+                <h1 class="text-white text-xl font-black italic uppercase tracking-tighter">EasyRide</h1>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                <a href="index.html" class="hover:text-primary transition-all">Home</a>
+                <a href="fleet.html" class="hover:text-primary transition-all">Explore Fleet</a>
+                <a href="index.html#how-it-works" class="hover:text-primary transition-all">Support</a>
+            </div>
+
+            <div id="nav-actions" class="flex items-center gap-4">
+                <button onclick="handleLogout()" class="text-red-500 hover:text-red-400 transition-all">
+                    <span class="material-icons text-2xl">logout</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex min-h-[calc(100vh-5rem)]">
+        
+        <aside class="w-64 border-r border-white/5 bg-black hidden lg:flex flex-col sticky top-20 h-[calc(100vh-5rem)]">
+            <nav class="flex-1 px-4 py-8 space-y-2 text-left">
+                <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-4 ml-3">Fleet Management</p>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white font-bold text-xs uppercase" href="#">
+                    <span class="material-icons">dashboard</span> Dashboard
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-white/5 hover:text-white transition-all text-xs font-bold uppercase" href="fleet.html">
+                    <span class="material-icons">explore</span> View Fleet
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-white/5 hover:text-white transition-all text-xs font-bold uppercase" href="add-vehicle.html">
+                    <span class="material-icons">add_circle</span> Add Vehicle
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-white/5">
+                <div class="flex items-center gap-3 p-3 bg-primary/5 rounded-2xl border border-primary/10 text-left">
+                    <div class="size-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+                        <span class="material-icons">account_circle</span>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p id="display-name" class="text-xs font-black truncate uppercase tracking-tighter text-white">Owner</p>
+                        <p class="text-[9px] text-primary font-bold uppercase">Fleet Manager</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-8 overflow-y-auto custom-scrollbar">
+            <div class="max-w-7xl mx-auto space-y-10">
+                
+                <div id="notif-section" class="space-y-3 hidden">
+                    </div>
+
+                <header class="flex justify-between items-center">
+                    <div class="text-left">
+                        <h2 class="text-sm font-black uppercase italic tracking-widest text-slate-400">Owner Hub Overview</h2>
+                        <h1 class="text-4xl font-black text-white uppercase italic tracking-tighter mt-1">Management <span class="text-primary">Console</span></h1>
+                    </div>
+                    <button onclick="window.location.href='add-vehicle.html'" class="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:brightness-110 transition-all shadow-lg shadow-primary/20">
+                        <span class="material-icons text-sm">add_circle</span> New Vehicle
+                    </button>
+                </header>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-8 rounded-[2.5rem] bg-white/5 border border-white/5 text-left group hover:border-primary/40 transition-all">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Total Earnings</p>
+                        <p id="total-earnings" class="text-4xl font-black text-white italic">LKR 0</p>
+                    </div>
+                    <div class="p-8 rounded-[2.5rem] bg-white/5 border border-white/5 text-left group hover:border-primary/40 transition-all">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Active Fleet</p>
+                        <p id="total-cars" class="text-4xl font-black text-white italic">0 Vehicles</p>
+                    </div>
+                    <div class="p-8 rounded-[2.5rem] bg-white/5 border border-white/5 text-left group hover:border-amber-500/40 transition-all">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Pending Requests</p>
+                        <p id="pending-count" class="text-4xl font-black text-amber-500 italic">0 Pending</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-white/5 border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
+                            <div class="p-8 border-b border-white/5 bg-white/[0.02] flex justify-between items-center">
+                                <h3 class="text-sm font-black text-white uppercase italic tracking-tighter">Incoming Reservations</h3>
+                                <button onclick="loadDashboardData()" class="text-[9px] font-black uppercase text-primary hover:underline">Sync Data</button>
+                            </div>
+                            <div class="overflow-x-auto text-left">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="text-slate-500 text-[10px] font-black uppercase tracking-widest border-b border-white/5">
+                                            <th class="px-8 py-5">Vehicle</th>
+                                            <th class="px-8 py-5">Customer</th>
+                                            <th class="px-8 py-5">Total</th>
+                                            <th class="px-8 py-5 text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bookings-table-body" class="divide-y divide-white/5">
+                                        <tr><td colspan="4" class="p-20 text-center text-slate-600 font-bold uppercase italic animate-pulse">Establishing Connection...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="bg-white/5 border border-white/5 rounded-[2.5rem] p-8 text-left">
+                            <h3 class="text-sm font-black text-white uppercase italic tracking-tighter mb-6 flex justify-between">
+                                My Garage
+                                <span class="material-icons text-primary text-sm">inventory_2</span>
+                            </h3>
+                            <div id="garage-list" class="space-y-4">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const _supabase = supabase.createClient('https://mgzvrwlztdzkaasngqxh.supabase.co', 'sb_publishable_53m4C0gq1eGMRkjvbZ2-9w_F4mIKRCB');
+        let currentOwnerId = null;
+
+        async function init() {
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            currentOwnerId = session.user.id;
+
+            const { data: prof } = await _supabase.from('profiles').select('*').eq('id', currentOwnerId).single();
+            if (prof) document.getElementById('display-name').innerText = prof.full_name;
+
+            loadNotifications(currentOwnerId); // නොටිෆිකේෂන් ලෝඩ් කිරීම
+            loadDashboardData();
+        }
+
+        // --- NEW: Load Notifications for Owner ---
+        async function loadNotifications(userId) {
+            const { data: notifs, error } = await _supabase
+                .from('notifications')
+                .select('*')
+                .eq('user_id', userId)
+                .eq('is_read', false)
+                .order('created_at', { ascending: false });
+
+            const section = document.getElementById('notif-section');
+            if (notifs && notifs.length > 0) {
+                section.classList.remove('hidden');
+                section.innerHTML = notifs.map(n => `
+                    <div class="bg-primary/10 border border-primary/20 p-5 rounded-2xl flex justify-between items-center animate-slide">
+                        <div class="flex items-center gap-3">
+                            <span class="material-icons text-primary">campaign</span>
+                            <p class="text-[11px] font-black uppercase text-white tracking-widest">${n.message}</p>
+                        </div>
+                        <button onclick="markAsRead(${n.id})" class="text-[9px] font-black bg-primary text-white px-4 py-2 rounded-lg uppercase hover:brightness-110 transition-all">
+                            Got it
+                        </button>
+                    </div>
+                `).join('');
+            } else {
+                section.classList.add('hidden');
+            }
+        }
+
+        async function markAsRead(id) {
+            await _supabase.from('notifications').update({ is_read: true }).eq('id', id);
+            loadNotifications(currentOwnerId);
+        }
+
+        async function loadDashboardData() {
+            const { data: cars } = await _supabase.from('cars').select('*').eq('owner_id', currentOwnerId);
+            const garageList = document.getElementById('garage-list');
+            document.getElementById('total-cars').innerText = (cars?.length || 0) + " Vehicles";
+
+            if (cars) {
+                garageList.innerHTML = "";
+                if(cars.length === 0) garageList.innerHTML = `<p class="text-[10px] text-slate-600 font-bold uppercase italic text-center py-10">No vehicles listed.</p>`;
+                
+                cars.forEach(car => {
+                    garageList.innerHTML += `
+                        <div class="p-4 bg-white/5 rounded-2xl border border-white/5 group hover:border-red-500/30 transition-all">
+                            <div class="flex items-center gap-4 mb-3 text-left">
+                                <img src="${car.image_url}" class="size-14 rounded-xl object-cover border border-white/10">
+                                <div class="flex-1 overflow-hidden">
+                                    <p class="text-[11px] font-black text-white uppercase italic tracking-tighter truncate">${car.name}</p>
+                                    <p class="text-[9px] text-primary font-bold uppercase tracking-widest">${car.reg_number || 'No Reg'}</p>
+                                </div>
+                                <button onclick="deleteVehicle('${car.id}', '${car.name}')" class="text-slate-600 hover:text-red-500 transition-all">
+                                    <span class="material-icons text-lg">delete_outline</span>
+                                </button>
+                            </div>
+                            <div class="flex justify-between items-center border-t border-white/5 pt-3">
+                                <div class="flex items-center gap-1 text-slate-500">
+                                    <span class="material-icons text-[10px]">location_on</span>
+                                    <span class="text-[9px] font-bold uppercase tracking-widest">${car.location}</span>
+                                </div>
+                                <p class="text-[10px] font-black text-white">LKR ${Number(car.price).toLocaleString()}</p>
+                            </div>
+                        </div>`;
+                });
+            }
+
+            const carIds = cars?.map(c => c.id) || [];
+            const tableBody = document.getElementById('bookings-table-body');
+            
+            if (carIds.length > 0) {
+                const { data: bookings } = await _supabase.from('bookings').select('*').in('car_id', carIds).order('created_at', {ascending: false});
+                
+                document.getElementById('pending-count').innerText = bookings?.filter(b => b.status === 'Pending').length || 0;
+                const earnings = bookings?.filter(b => b.status === 'Approved').reduce((sum, b) => sum + Number(b.total_price), 0) || 0;
+                document.getElementById('total-earnings').innerText = "LKR " + earnings.toLocaleString();
+
+                if (bookings) {
+                    tableBody.innerHTML = "";
+                    if(bookings.length === 0) tableBody.innerHTML = `<tr><td colspan="4" class="p-20 text-center text-slate-700 font-bold uppercase">No reservations yet.</td></tr>`;
+
+                    bookings.forEach(b => {
+                        const statusClass = b.status === 'Approved' ? 'text-emerald-500' : b.status === 'Rejected' ? 'text-red-500' : 'text-amber-500';
+                        let actionBtns = b.status === 'Pending' ? `
+                            <div class="flex gap-2 justify-end">
+                                <button onclick="updateStatus('${b.id}', 'Approved')" class="p-2 bg-emerald-500/10 text-emerald-500 rounded-lg hover:bg-emerald-500 hover:text-white transition-all"><span class="material-icons text-sm">done</span></button>
+                                <button onclick="updateStatus('${b.id}', 'Rejected')" class="p-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all"><span class="material-icons text-sm">close</span></button>
+                            </div>
+                        ` : `<div class="text-right"><span class="text-[9px] font-black uppercase tracking-widest ${statusClass} border border-current px-2 py-1 rounded">${b.status}</span></div>`;
+
+                        tableBody.innerHTML += `
+                            <tr class="hover:bg-white/[0.02] transition-all">
+                                <td class="px-8 py-5">
+                                    <p class="text-xs font-black text-white italic uppercase">${b.car_name}</p>
+                                    <p class="text-[9px] text-slate-600 font-bold mt-0.5 uppercase tracking-widest">DATE: ${b.pickup_date}</p>
+                                </td>
+                                <td class="px-8 py-5">
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase">${b.customer_name}</p>
+                                    <p class="text-[9px] text-slate-600 font-medium">${b.customer_phone}</p>
+                                </td>
+                                <td class="px-8 py-5"><p class="text-xs font-black text-white italic">LKR ${Number(b.total_price).toLocaleString()}</p></td>
+                                <td class="px-8 py-5">${actionBtns}</td>
+                            </tr>`;
+                    });
+                }
+            } else {
+                tableBody.innerHTML = `<tr><td colspan="4" class="p-20 text-center text-slate-700 font-bold uppercase italic">No vehicles listed to receive bookings.</td></tr>`;
+            }
+        }
+
+        async function updateStatus(id, newStatus) {
+            if(!confirm(`Set booking to ${newStatus}?`)) return;
+            const { error } = await _supabase.from('bookings').update({ status: newStatus }).eq('id', id);
+            if (error) alert(error.message); else loadDashboardData();
+        }
+
+        async function deleteVehicle(id, name) {
+            if (confirm(`Are you sure you want to remove ${name}? This cannot be undone.`)) {
+                const { error } = await _supabase.from('cars').delete().eq('id', id);
+                if (error) alert("Error: " + error.message); else loadDashboardData();
+            }
+        }
+
+        async function handleLogout() { 
+            if(confirm("Logout from Owner Hub?")) {
+                await _supabase.auth.signOut(); 
+                window.location.href = 'index.html'; 
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

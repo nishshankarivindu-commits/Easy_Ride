@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>EasyRide | My Bookings</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#008000", "background-dark": "#050a05", "accent-dark": "#0a0f0a" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #050a05 !important; color: white; }
+        .glass { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="antialiased font-display min-h-screen">
+
+    <header class="sticky top-0 z-50 w-full glass">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+            <div class="flex items-center gap-2 text-primary cursor-pointer" onclick="window.location.href='index.html'">
+                <span class="material-icons text-3xl font-bold">directions_car</span>
+                <h2 class="text-white text-xl font-black italic uppercase tracking-tighter">EasyRide</h2>
+            </div>
+            <button onclick="window.location.href='fleet.html'" class="text-[10px] font-bold text-slate-500 hover:text-white uppercase tracking-widest transition-all">Back to Fleet</button>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-4xl px-6 py-12">
+        <div class="text-left mb-10">
+            <h1 class="text-3xl font-black text-white uppercase italic tracking-tight">My Reservations</h1>
+            <p id="status-msg" class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] mt-2">Once approved, owner details will appear here.</p>
+        </div>
+
+        <div id="bookings-container" class="space-y-6">
+            <div id="loading-spinner" class="py-20 text-center">
+                <p class="text-slate-600 animate-pulse italic text-[10px] font-bold uppercase tracking-widest">Loading history...</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const _supabase = supabase.createClient('https://mgzvrwlztdzkaasngqxh.supabase.co', 'sb_publishable_53m4C0gq1eGMRkjvbZ2-9w_F4mIKRCB');
+
+        async function loadMyBookings() {
+            const container = document.getElementById('bookings-container');
+            const statusMsg = document.getElementById('status-msg');
+
+            try {
+                // 1. Session check
+                const { data: { session } } = await _supabase.auth.getSession();
+                if (!session) { window.location.href = 'login.html'; return; }
+
+                // 2. Profile Fetch (නම ගන්නවා)
+                const { data: profile, error: profError } = await _supabase
+                    .from('profiles')
+                    .select('full_name')
+                    .eq('id', session.user.id)
+                    .single();
+                
+                // ප්‍රොෆයිල් එකක් නැති වුණොත් ඊමේල් එක පාවිච්චි කරනවා
+                const userName = (profile && profile.full_name) ? profile.full_name : session.user.email;
+
+                // 3. Bookings Fetch
+                const { data: bookings, error: bookError } = await _supabase
+                    .from('bookings')
+                    .select('*')
+                    .eq('customer_name', userName)
+                    .order('created_at', { ascending: false });
+
+                if (bookError) throw bookError;
+
+                if (!bookings || bookings.length === 0) {
+                    container.innerHTML = `
+                        <div class="bg-accent-dark border border-white/5 p-20 rounded-3xl text-center">
+                            <span class="material-icons text-slate-700 text-6xl mb-4">history</span>
+                            <p class="text-slate-500 font-bold uppercase text-[10px] tracking-widest">No reservations found yet.</p>
+                            <button onclick="window.location.href='fleet.html'" class="mt-6 text-primary font-bold text-xs underline uppercase italic">Book Your First Ride</button>
+                        </div>`;
+                    return;
+                }
+
+                // 4. UI එකට දත්ත දානවා
+                container.innerHTML = "";
+                for (const b of bookings) {
+                    let ownerHTML = "";
+                    
+                    // Approved නම් විතරක් Owner ගේ පෝන් නම්බර් එක පෙන්වනවා
+                    if (b.status === 'Approved') {
+                        const { data: car } = await _supabase.from('cars').select('owner_phone').eq('id', b.car_id).single();
+                        if (car && car.owner_phone) {
+                            ownerHTML = `
+                                <div class="mt-6 pt-6 border-t border-white/5 flex items-center justify-between">
+                                    <div class="text-left">
+                                        <p class="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">Contact Owner</p>
+                                        <p class="text-white font-black text-xl italic tracking-tighter">${car.owner_phone}</p>
+                                    </div>
+                                    <a href="tel:${car.owner_phone}" class="bg-emerald-500 hover:bg-emerald-600 text-white p-3 rounded-full transition-all shadow-lg shadow-emerald-500/20 active:scale-95">
+                                        <span class="material-icons">call</span>
+                                    </a>
+                                </div>`;
+                        }
+                    }
+
+                    const statusStyle = b.status === 'Approved' ? 'text-emerald-500 bg-emerald-500/10' : 
+                                       b.status === 'Rejected' ? 'text-red-500 bg-red-500/10' : 'text-amber-500 bg-amber-500/10';
+
+                    container.innerHTML += `
+                        <div class="bg-accent-dark border border-white/5 rounded-3xl p-8 hover:border-primary/30 transition-all text-left group">
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                                <div>
+                                    <h3 class="text-2xl font-black text-white uppercase italic tracking-tighter">${b.car_name}</h3>
+                                    <div class="flex gap-4 mt-2">
+                                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">LKR ${Number(b.total_price).toLocaleString()} • ${b.duration} Days</p>
+                                    </div>
+                                </div>
+                                <div class="px-5 py-2 rounded-2xl border border-current/10 ${statusStyle}">
+                                    <span class="text-[10px] font-black uppercase tracking-widest">${b.status}</span>
+                                </div>
+                            </div>
+                            ${ownerHTML}
+                        </div>`;
+                }
+
+            } catch (err) {
+                console.error("My Bookings Error:", err);
+                container.innerHTML = `
+                    <div class="bg-red-500/10 border border-red-500/20 p-10 rounded-3xl text-center">
+                        <p class="text-red-500 text-[10px] font-black uppercase tracking-widest">Error Loading Bookings</p>
+                        <p class="text-slate-500 text-xs mt-2">${err.message}</p>
+                    </div>`;
+            }
+        }
+
+        window.onload = loadMyBookings;
+    </script>
+</body>
+</html>

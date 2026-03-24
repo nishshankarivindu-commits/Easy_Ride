@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>EasyRide | My Bookings</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#008000", "background-dark": "#050a05" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #050a05 !important; color: white; padding-top: 5rem; }
+        .glass { background: rgba(10, 15, 10, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass-nav { background: rgba(5, 10, 5, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .booking-card:hover { border-color: rgba(0, 128, 0, 0.3); transform: translateY(-3px); }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #008000; border-radius: 10px; }
+        
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-slide { animation: slideIn 0.5s ease out; }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+
+    <nav class="fixed top-0 w-full z-[100] glass-nav">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+                <span class="material-icons text-primary text-3xl font-bold">directions_car</span>
+                <h1 class="text-white text-xl font-black italic uppercase tracking-tighter">EasyRide</h1>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                <a href="index.html" class="hover:text-primary transition-all">Home</a>
+                <a href="fleet.html" class="hover:text-primary transition-all">Explore Fleet</a>
+                <a href="index.html#how-it-works" class="hover:text-primary transition-all">Support</a>
+            </div>
+
+            <div id="nav-actions" class="flex items-center gap-4">
+                <div class="animate-pulse w-20 h-8 bg-white/5 rounded-xl"></div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto py-12 px-6">
+        
+        <div id="notif-section" class="mb-10 space-y-3 hidden">
+            </div>
+
+        <header class="mb-12 text-left">
+            <h2 class="text-4xl font-black italic uppercase tracking-tighter text-white">My <span class="text-primary">Reservations</span></h2>
+            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mt-2">Track your rental status and updates</p>
+        </header>
+
+        <div id="customer-bookings" class="grid grid-cols-1 gap-6 text-left">
+            <div class="py-20 text-center text-slate-700 font-black uppercase tracking-widest italic animate-pulse">
+                Syncing requests...
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const _supabase = supabase.createClient('https://mgzvrwlztdzkaasngqxh.supabase.co', 'sb_publishable_53m4C0gq1eGMRkjvbZ2-9w_F4mIKRCB');
+
+        async function initDashboard() {
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+
+            setupNavbar(session);
+            loadNotifications(session.user.id);
+            loadCustomerBookings(session.user.id);
+        }
+
+        // --- GLOBAL NAVBAR ---
+        async function setupNavbar(session) {
+            const navActions = document.getElementById('nav-actions');
+            const { data: prof } = await _supabase.from('profiles').select('role').eq('id', session.user.id).single();
+            
+            const dashboardLink = prof?.role === 'owner' ? 'owner-dashboard.html' : 'customer-dashboard.html';
+            const dashboardName = prof?.role === 'owner' ? 'Owner Hub' : 'My Bookings';
+
+            navActions.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <a href="${dashboardLink}" class="bg-primary/20 text-primary px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest border border-primary/20 transition-all hover:bg-primary hover:text-white">
+                        ${dashboardName}
+                    </a>
+                    <button onclick="handleLogout()" class="text-red-500 hover:text-red-400 transition-all">
+                        <span class="material-icons">logout</span>
+                    </button>
+                </div>`;
+        }
+
+        // --- NOTIFICATION LOGIC (New) ---
+        async function loadNotifications(userId) {
+            const { data: notifs, error } = await _supabase
+                .from('notifications')
+                .select('*')
+                .eq('user_id', userId)
+                .eq('is_read', false)
+                .order('created_at', { ascending: false });
+
+            const section = document.getElementById('notif-section');
+            if (notifs && notifs.length > 0) {
+                section.classList.remove('hidden');
+                section.innerHTML = notifs.map(n => `
+                    <div class="glass border-primary/20 p-5 rounded-2xl flex justify-between items-center animate-slide">
+                        <div class="flex items-center gap-3">
+                            <span class="material-icons text-primary">notifications_active</span>
+                            <p class="text-[11px] font-black uppercase text-white tracking-widest">${n.message}</p>
+                        </div>
+                        <button onclick="markAsRead(${n.id})" class="text-[9px] font-black bg-primary/20 text-primary px-4 py-2 rounded-lg uppercase hover:bg-primary hover:text-white transition-all">
+                            Dismiss
+                        </button>
+                    </div>
+                `).join('');
+            } else {
+                section.classList.add('hidden');
+            }
+        }
+
+        async function markAsRead(id) {
+            const { error } = await _supabase.from('notifications').update({ is_read: true }).eq('id', id);
+            if (!error) {
+                const { data: { session } } = await _supabase.auth.getSession();
+                loadNotifications(session.user.id);
+            }
+        }
+
+        // --- BOOKINGS LOGIC ---
+        async function loadCustomerBookings(userId) {
+            const { data: bookings, error } = await _supabase
+                .from('bookings')
+                .select('*')
+                .eq('customer_id', userId)
+                .order('created_at', { ascending: false });
+
+            const container = document.getElementById('customer-bookings');
+            container.innerHTML = "";
+
+            if (error) { 
+                container.innerHTML = `<p class="text-red-500 font-bold uppercase text-xs text-center">Error: ${error.message}</p>`;
+                return; 
+            }
+
+            if (!bookings || bookings.length === 0) {
+                container.innerHTML = `
+                    <div class="glass p-16 rounded-[2.5rem] text-center border-dashed border-white/10">
+                        <p class="text-slate-500 font-black uppercase tracking-widest text-sm">No reservations found.</p>
+                        <button onclick="window.location.href='fleet.html'" class="mt-6 text-primary text-[10px] font-black uppercase underline tracking-widest hover:text-white transition-all">Explore Fleet</button>
+                    </div>`;
+                return;
+            }
+
+            bookings.forEach(b => {
+                const statusColor = b.status === 'Approved' ? 'text-emerald-500' : b.status === 'Rejected' ? 'text-red-500' : 'text-amber-500';
+                
+                container.innerHTML += `
+                    <div class="glass p-8 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center gap-6 border border-white/5 booking-card transition-all">
+                        <div class="flex-1 space-y-2">
+                            <div class="flex items-center gap-3">
+                                <span class="material-icons text-primary text-sm">directions_car</span>
+                                <h3 class="text-xl font-black text-white italic uppercase tracking-tighter">${b.car_name}</h3>
+                            </div>
+                            <div class="flex flex-wrap gap-6 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                <span><span class="text-slate-600">PICKUP:</span> ${b.pickup_date}</span>
+                                <span><span class="text-slate-600">RETURN:</span> ${b.return_date}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center md:text-right px-6 md:border-x border-white/5">
+                            <p class="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">Total Payment</p>
+                            <p class="text-xl font-black text-white italic tracking-tighter">LKR ${Number(b.total_price).toLocaleString()}</p>
+                        </div>
+
+                        <div class="bg-white/5 px-8 py-4 rounded-2xl border border-white/5 min-w-[140px] text-center">
+                            <p class="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">Current Status</p>
+                            <p class="text-[11px] font-black uppercase tracking-[0.2em] ${statusColor}">${b.status}</p>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        async function handleLogout() {
+            if(confirm("Logout වෙන්න ෂුවර්ද මචං?")) {
+                await _supabase.auth.signOut();
+                window.location.href = 'index.html';
+            }
+        }
+
+        window.onload = initDashboard;
+    </script>
+</body>
+</html>
